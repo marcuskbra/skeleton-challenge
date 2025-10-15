@@ -5,7 +5,7 @@ This module demonstrates the pattern of using discriminated unions
 instead of exceptions for error handling.
 """
 
-from typing import Literal, Union
+from typing import Any, Callable, Literal, Union, cast
 
 from pydantic import Field
 
@@ -148,9 +148,9 @@ DeleteEntityResult = Union[
 
 def handle_result[T: Success, E: Error](
     result: Union[T, E],
-    on_success: callable[[T], any],
-    on_error: callable[[E], any] | None = None,
-) -> any:
+    on_success: Callable[[T], Any],
+    on_error: Callable[[E], Any] | None = None,
+) -> Any:
     """
     Generic result handler for discriminated unions.
 
@@ -163,9 +163,9 @@ def handle_result[T: Success, E: Error](
         The return value of the appropriate handler
     """
     if isinstance(result, Success):
-        return on_success(result)
+        return on_success(cast(T, result))
     elif on_error:
-        return on_error(result)
+        return on_error(cast(E, result))
     else:
         # Default error handling
         raise RuntimeError(f"Operation failed: {result.message}")
@@ -195,7 +195,7 @@ def unwrap[T: Success, E: Error](result: Union[T, E]) -> T:
         RuntimeError: If the result is an error
     """
     if isinstance(result, Success):
-        return result
+        return cast(T, result)
     raise RuntimeError(f"Cannot unwrap error: {result.message}")
 
 
@@ -211,5 +211,5 @@ def unwrap_or[T: Success, E: Error](result: Union[T, E], default: T) -> T:
         The success value or default
     """
     if isinstance(result, Success):
-        return result
+        return cast(T, result)
     return default

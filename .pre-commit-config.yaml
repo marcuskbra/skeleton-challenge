@@ -67,7 +67,7 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [push]
+        stages: [pre-push]
 
   # Security scanning
   - repo: https://github.com/PyCQA/bandit
@@ -92,6 +92,6 @@ default_language_version:
   python: python3.12
 
 # Stages configuration
-default_stages: [commit]
+default_stages: [pre-commit]
 fail_fast: false
 minimum_pre_commit_version: 3.0.0

@@ -4,7 +4,7 @@ Following DRY principle to eliminate repeated configuration.
 All domain entities and value objects inherit from these bases.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -73,13 +73,13 @@ class AggregateRoot(DomainEntity):
 
     id: str = Field(..., description="Unique identifier for the aggregate")
     version: int = Field(default=1, description="Version for optimistic locking")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     def increment_version(self) -> None:
         """Increment version for optimistic locking."""
         self.version += 1
-        self.updated_at = datetime.utcnow()
+        self.updated_at = datetime.now(timezone.utc)
 
 
 class DomainEvent(ImmutableEntity):
@@ -93,7 +93,7 @@ class DomainEvent(ImmutableEntity):
     event_id: str = Field(..., description="Unique event identifier")
     aggregate_id: str = Field(..., description="ID of the aggregate that raised the event")
     event_type: str = Field(..., description="Type of the event")
-    occurred_at: datetime = Field(default_factory=datetime.utcnow)
+    occurred_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     data: Dict[str, Any] = Field(default_factory=dict, description="Event payload")
 
 

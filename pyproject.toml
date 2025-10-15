@@ -13,19 +13,19 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.21.0",
-    "ruff>=0.1.0",
-    "tox>=4.0.0",
-    "tox-uv>=1.0.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.14.0",
+    "tox>=4.31.0",
+    "tox-uv>=1.29.0",
 ]
 test-integration = [
-    "pytest-httpx>=0.30.0",
-    "pytest-timeout>=2.2.0",
-    "pytest-mock>=3.12.0",
-    "faker>=20.0.0",
-    "freezegun>=1.4.0",
+    "pytest-httpx>=0.35.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-mock>=3.15.1",
+    "faker>=37.11.0",
+    "freezegun>=1.5.5",
 ]
 
 [build-system]
@@ -38,7 +38,7 @@ include = ["pindrop_challenge*"]
 
 # Tox configuration
 [tool.tox]
-requires = ["tox>=4.0.0", "tox-uv>=1.0.0"]
+requires = ["tox>=4.31.0", "tox-uv>=1.29.0"]
 env_list = [
     "unit", "test-fast", "lint", "lint-fix", "format", "format-fix",
     "type", "coverage", "integration", "validate", "py312"
@@ -52,9 +52,9 @@ runner = "uv-venv-runner"  # Use uv for speed
 skip_install = false
 set_env = { PYTHONPATH = "{tox_root}", DOTENV_PATH = ".env.test" }
 deps = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.0.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "pytest-asyncio>=1.2.0",
 ]
 allowlist_externals = ["pytest", "ruff", "python", "ty"]
 
@@ -82,7 +82,7 @@ commands = [
 # Linting environments
 [tool.tox.env.lint]
 description = "Run linter (ruff)"
-deps = ["ruff>=0.1.0"]
+deps = ["ruff>=0.14.0"]
 commands_pre = []
 commands = [
     ["ruff", "check", "."]
@@ -90,7 +90,7 @@ commands = [
 
 [tool.tox.env."lint-fix"]
 description = "Run linter and auto-fix issues"
-deps = ["ruff>=0.1.0"]
+deps = ["ruff>=0.14.0"]
 commands_pre = []
 commands = [
     ["ruff", "check", ".", "--fix"]
@@ -99,7 +99,7 @@ commands = [
 # Formatting environments
 [tool.tox.env.format]
 description = "Check code formatting"
-deps = ["ruff>=0.1.0"]
+deps = ["ruff>=0.14.0"]
 commands_pre = []
 commands = [
     ["ruff", "format", ".", "--check"]
@@ -107,7 +107,7 @@ commands = [
 
 [tool.tox.env."format-fix"]
 description = "Format code with ruff"
-deps = ["ruff>=0.1.0"]
+deps = ["ruff>=0.14.0"]
 commands_pre = []
 commands = [
     ["ruff", "format", "."]
@@ -224,8 +224,3 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
-
-# ty configuration for type checking
-[tool.ty]
-include = ["src", "tests"]
-exclude = ["docs/**"]
