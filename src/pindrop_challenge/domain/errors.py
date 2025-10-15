@@ -152,7 +152,7 @@ def handle_result[T: Success, E: Error](
     on_error: Callable[[E], Any] | None = None,
 ) -> Any:
     """
-    Generic result handler for discriminated unions.
+    Handle result using callbacks for discriminated unions.
 
     Args:
         result: The result to handle (Success or Error)
@@ -161,6 +161,7 @@ def handle_result[T: Success, E: Error](
 
     Returns:
         The return value of the appropriate handler
+
     """
     if isinstance(result, Success):
         return on_success(cast(T, result))
@@ -193,6 +194,7 @@ def unwrap[T: Success, E: Error](result: Union[T, E]) -> T:
 
     Raises:
         RuntimeError: If the result is an error
+
     """
     if isinstance(result, Success):
         return cast(T, result)
@@ -209,6 +211,7 @@ def unwrap_or[T: Success, E: Error](result: Union[T, E], default: T) -> T:
 
     Returns:
         The success value or default
+
     """
     if isinstance(result, Success):
         return cast(T, result)

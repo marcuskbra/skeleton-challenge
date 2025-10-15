@@ -166,9 +166,39 @@ line-length = 120
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "B", "C4", "PT", "RUF", "PLC"]
-ignore = ["E501"]  # Line length handled by formatter
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "W",    # pycodestyle warnings
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "PT",   # flake8-pytest-style
+    "RUF",  # ruff-specific rules
+    "PLC",  # pylint conventions
+    "S",    # flake8-bandit (security)
+    "D",    # pydocstyle (docstrings)
+]
+ignore = [
+    "E501",   # Line length handled by formatter
+    "D100",   # Missing docstring in public module (we use module-level docstrings)
+    "D104",   # Missing docstring in public package (__init__.py files have descriptions)
+    "D105",   # Missing docstring in magic method (__str__, __repr__ are self-explanatory)
+    "D107",   # Missing docstring in __init__ (not always needed)
+    "D203",   # 1 blank line required before class docstring (conflicts with D211)
+    "D212",   # Multi-line docstring summary should start at the first line (we prefer D213)
+    "S101",   # Use of assert detected (allowed in tests)
+    "S603",   # subprocess without shell=True (we control the inputs)
+    "S607",   # Starting a process with a partial executable path (we trust our environment)
+]
 fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",   # Allow assert in tests
+    "D",      # Don't require docstrings in tests
+]
 
 [tool.ruff.format]
 quote-style = "double"

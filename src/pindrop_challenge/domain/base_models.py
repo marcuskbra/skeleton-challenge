@@ -1,5 +1,6 @@
 """
 Base Pydantic models for domain layer.
+
 Following DRY principle to eliminate repeated configuration.
 All domain entities and value objects inherit from these bases.
 """
