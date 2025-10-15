@@ -80,6 +80,46 @@ make run
 uv run python -m pindrop_challenge
 ```
 
+### Running the API
+
+The project includes a FastAPI-based REST API with health check endpoints:
+
+```bash
+# Start API in development mode (with auto-reload)
+make api-dev
+
+# Start API in production mode (4 workers)
+make api-prod
+
+# Run API tests
+make api-test
+
+# Check API health
+make api-health
+
+# Open API documentation (Swagger UI)
+make api-docs
+```
+
+The API will be available at:
+- **API Base**: http://localhost:8000
+- **Health Check**: http://localhost:8000/api/v1/health
+- **Liveness**: http://localhost:8000/api/v1/health/live
+- **Readiness**: http://localhost:8000/api/v1/health/ready
+- **API Docs**: http://localhost:8000/api/docs (development only)
+- **ReDoc**: http://localhost:8000/api/redoc (development only)
+
+#### API Features
+
+- ✅ **FastAPI Framework**: Modern, fast (high-performance), async-first web framework
+- ✅ **Health Checks**: Liveness and readiness probes for Kubernetes/production
+- ✅ **Error Handling**: Integration with domain error discriminated unions
+- ✅ **CORS Middleware**: Configurable cross-origin resource sharing
+- ✅ **Request Logging**: Automatic logging of all requests and responses
+- ✅ **OpenAPI Documentation**: Auto-generated Swagger UI and ReDoc
+- ✅ **Type Safety**: Full Pydantic validation for request/response models
+- ✅ **Production Ready**: Application factory pattern for testability
+
 ### Development Workflow
 
 This project uses a **dual approach** for optimal developer experience:

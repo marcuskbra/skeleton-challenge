@@ -2,7 +2,7 @@
 # Modern Python project with Clean Architecture
 
 .PHONY: help install dev-install test lint lint-fix format format-fix type-check coverage validate clean run \
-	test-all test-unit test-integration test-fast
+	test-all test-unit test-integration test-fast api-dev api-prod api-test api-docs api-health
 
 # ============================================================================
 # Help & Documentation
@@ -16,6 +16,9 @@ help: ## Show this help message
 	@echo ""
 	@echo "Development:"
 	@grep -E '^(run|test|lint|format|type-check|validate):.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
+	@echo ""
+	@echo "API Development:"
+	@grep -E '^(api-.*):.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Testing:"
 	@grep -E '^(test[^-]|test-all|test-unit|test-integration|test-fast|coverage):.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -43,6 +46,27 @@ dev-install: ## Install all dependencies including dev and test extras
 
 run: ## Run the application
 	uv run python -m pindrop_challenge
+
+# ============================================================================
+# API Development
+# ============================================================================
+
+api-dev: ## Run the API server in development mode (auto-reload)
+	uv run uvicorn pindrop_challenge.presentation.main:app --reload --host 0.0.0.0 --port 8000
+
+api-prod: ## Run the API server in production mode
+	uv run uvicorn pindrop_challenge.presentation.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+api-test: ## Run API tests only
+	uv run pytest tests/unit/presentation/api/ -xvs
+
+api-health: ## Check API health endpoint
+	@echo "Checking API health..."
+	@curl -s http://localhost:8000/api/v1/health | python -m json.tool || echo "API is not running. Start with 'make api-dev'"
+
+api-docs: ## Open API documentation in browser
+	@echo "Opening API docs at http://localhost:8000/api/docs"
+	@python -m webbrowser http://localhost:8000/api/docs || open http://localhost:8000/api/docs || xdg-open http://localhost:8000/api/docs
 
 # ============================================================================
 # Testing

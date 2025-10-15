@@ -14,6 +14,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import pytest
 from dotenv import load_dotenv
+from fastapi.testclient import TestClient
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -83,6 +84,16 @@ def temp_data_dir(tmp_path):
 async def async_client():
     """Create an async HTTP client for integration tests."""
     async with httpx.AsyncClient(timeout=30.0) as client:
+        yield client
+
+
+@pytest.fixture
+def test_client():
+    """Create a FastAPI test client for API endpoint testing."""
+    from pindrop_challenge.presentation.main import create_app  # noqa: PLC0415
+
+    app = create_app(environment="test")
+    with TestClient(app) as client:
         yield client
 
 
