@@ -5,10 +5,13 @@ Shared pytest fixtures and configuration for all tests.
 import asyncio
 import os
 import sys
+import time
+import uuid
+from datetime import datetime
 from pathlib import Path
-from typing import Generator
 from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 from dotenv import load_dotenv
 
@@ -79,8 +82,6 @@ def temp_data_dir(tmp_path):
 @pytest.fixture
 async def async_client():
     """Create an async HTTP client for integration tests."""
-    import httpx
-
     async with httpx.AsyncClient(timeout=30.0) as client:
         yield client
 
@@ -111,7 +112,7 @@ def sample_entity_data():
         "metadata": {
             "version": "1.0.0",
             "author": "test",
-        }
+        },
     }
 
 
@@ -126,7 +127,6 @@ class AssertionHelpers:
     @staticmethod
     def assert_valid_uuid(value: str) -> None:
         """Assert that a value is a valid UUID."""
-        import uuid
         try:
             uuid.UUID(value)
         except ValueError:
@@ -135,7 +135,6 @@ class AssertionHelpers:
     @staticmethod
     def assert_datetime_format(value: str, fmt: str = "%Y-%m-%dT%H:%M:%S") -> None:
         """Assert that a value matches a datetime format."""
-        from datetime import datetime
         try:
             datetime.strptime(value.replace("Z", ""), fmt)
         except ValueError:
@@ -161,7 +160,6 @@ def assert_helpers():
 @pytest.fixture
 def benchmark_timer():
     """Simple benchmark timer for performance tests."""
-    import time
 
     class Timer:
         def __init__(self):
@@ -185,18 +183,8 @@ def benchmark_timer():
 
 def pytest_configure(config):
     """Configure pytest with custom markers."""
-    config.addinivalue_line(
-        "markers", "unit: Unit tests (no external dependencies)"
-    )
-    config.addinivalue_line(
-        "markers", "integration: Integration tests (may require external services)"
-    )
-    config.addinivalue_line(
-        "markers", "contract: Contract tests (behavioral requirements)"
-    )
-    config.addinivalue_line(
-        "markers", "slow: Slow tests (>1 second)"
-    )
-    config.addinivalue_line(
-        "markers", "smoke: Smoke tests (basic sanity checks)"
-    )
+    config.addinivalue_line("markers", "unit: Unit tests (no external dependencies)")
+    config.addinivalue_line("markers", "integration: Integration tests (may require external services)")
+    config.addinivalue_line("markers", "contract: Contract tests (behavioral requirements)")
+    config.addinivalue_line("markers", "slow: Slow tests (>1 second)")
+    config.addinivalue_line("markers", "smoke: Smoke tests (basic sanity checks)")

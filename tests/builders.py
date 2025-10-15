@@ -3,11 +3,9 @@ Test data builders following the Builder pattern for creating test objects.
 This provides a flexible and maintainable way to create test data.
 """
 
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from uuid import uuid4
-
 
 # ============================================================================
 # Base Builder Class

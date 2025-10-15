@@ -4,9 +4,10 @@ Following DRY principle to eliminate repeated configuration.
 All domain entities and value objects inherit from these bases.
 """
 
-from typing import Any, Dict, Optional
-from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DomainEntity(BaseModel):
@@ -134,7 +135,7 @@ class Error(BaseModel):
 class Email(ValueObject):
     """Value object representing an email address."""
 
-    value: str = Field(..., pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    value: str = Field(..., pattern=r"^[\w\.-]+@[\w\.-]+\.\w+$")
 
     def __str__(self) -> str:
         return self.value
@@ -142,19 +143,19 @@ class Email(ValueObject):
     @property
     def domain(self) -> str:
         """Get the domain part of the email."""
-        return self.value.split('@')[1]
+        return self.value.split("@")[1]
 
     @property
     def username(self) -> str:
         """Get the username part of the email."""
-        return self.value.split('@')[0]
+        return self.value.split("@")[0]
 
 
 class Money(ValueObject):
     """Value object representing a monetary amount."""
 
     amount: float = Field(..., ge=0, description="Amount in the smallest unit (cents)")
-    currency: str = Field(..., pattern=r'^[A-Z]{3}$', description="ISO 4217 currency code")
+    currency: str = Field(..., pattern=r"^[A-Z]{3}$", description="ISO 4217 currency code")
 
     def __str__(self) -> str:
         return f"{self.currency} {self.amount:.2f}"

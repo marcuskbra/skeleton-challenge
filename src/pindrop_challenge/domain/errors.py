@@ -6,10 +6,10 @@ instead of exceptions for error handling.
 """
 
 from typing import Literal, Union
+
 from pydantic import Field
 
 from .base_models import Error, Success
-
 
 # ============================================================================
 # Common Domain Errors
