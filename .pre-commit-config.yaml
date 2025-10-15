@@ -5,12 +5,10 @@
 # To run manually: pre-commit run --all-files
 
 repos:
-  # Standard pre-commit hooks
+  # Standard pre-commit hooks (non-Python specific)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: trailing-whitespace
-        name: Trim trailing whitespace
       - id: end-of-file-fixer
         name: Fix end of files
       - id: check-yaml
@@ -28,10 +26,6 @@ repos:
         name: Check for case conflicts
       - id: detect-private-key
         name: Detect private keys
-      - id: debug-statements
-        name: Check for debug statements
-      - id: check-docstring-first
-        name: Check docstring is first
 
   # Local hooks using uv commands
   - repo: local

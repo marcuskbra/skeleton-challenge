@@ -179,6 +179,7 @@ select = [
     "PLC",  # pylint conventions
     "S",    # flake8-bandit (security)
     "D",    # pydocstyle (docstrings)
+    "T10",  # flake8-debugger (replaces debug-statements hook)
 ]
 ignore = [
     "E501",   # Line length handled by formatter
