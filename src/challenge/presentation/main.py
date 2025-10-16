@@ -20,8 +20,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from pindrop_challenge import __version__
-from pindrop_challenge.presentation.api.v1 import health
+from challenge import __version__
+from challenge.presentation.api.v1 import health
 
 logger = logging.getLogger(__name__)
 

@@ -77,7 +77,7 @@ pip install -e ".[dev,test-integration]"
 make run
 
 # Or directly
-uv run python -m pindrop_challenge
+uv run python -m challenge
 ```
 
 ### Running the API
@@ -133,7 +133,7 @@ We use `uv` for local development due to its **10-100x speed improvement** over 
 make test           # Runs: uv run pytest tests/unit/
 make lint           # Runs: uv run ruff check src/ tests/
 make format         # Runs: uv run ruff format src/ tests/
-make run            # Runs: uv run python -m pindrop_challenge
+make run            # Runs: uv run python -m challenge
 
 # Or use uv directly for any Python command
 uv run python script.py
@@ -189,7 +189,7 @@ make quick         # Fast tests + quality checks
 
 ```
 pindrop-challenge/
-├── src/pindrop_challenge/      # Source code (Clean Architecture)
+├── src/challenge/      # Source code (Clean Architecture)
 │   ├── domain/                 # Core business logic
 │   │   ├── base_models.py     # Base classes for entities & value objects
 │   │   ├── errors.py          # Discriminated unions for error handling
@@ -338,7 +338,7 @@ COPY src/ src/
 RUN uv pip install -e .
 
 # Run application
-CMD ["python", "-m", "pindrop_challenge"]
+CMD ["python", "-m", "challenge"]
 ```
 
 ## 📚 Documentation
@@ -358,7 +358,7 @@ The project follows DDD principles:
 This project uses **discriminated unions** for error handling instead of exceptions, providing compile-time safety and explicit error handling:
 
 ```python
-from pindrop_challenge.domain.errors import (
+from challenge.domain.errors import (
     CreateEntityResult,
     CreateEntitySuccess,
     ValidationError,

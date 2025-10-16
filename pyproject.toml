@@ -37,7 +37,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["pindrop_challenge*"]
+include = ["challenge*"]
 
 # Tox configuration
 [tool.tox]
@@ -131,7 +131,7 @@ description = "Run tests with coverage report"
 extras = ["dev", "test-integration"]
 commands = [
     ["pytest", "tests/",
-        "--cov=src", "--cov=pindrop_challenge",
+        "--cov=src", "--cov=challenge",
         "--cov-report=term-missing", "--cov-report=html", "--cov-report=xml"],
     ["python", "-c", "print('Coverage report generated in htmlcov/index.html')"]
 ]
@@ -235,16 +235,16 @@ filterwarnings = [
 [tool.coverage.run]
 relative_files = true
 parallel = true
-source = ["src", "pindrop_challenge"]
+source = ["src", "challenge"]
 omit = ["*/tests/*", "*/__pycache__/*", "*/migrations/*"]
 data_file = ".coverage"
 
 [tool.coverage.paths]
 source = [
     "src/",
-    "pindrop_challenge/",
+    "challenge/",
     "*/src/",
-    "*/pindrop_challenge/",
+    "*/challenge/",
 ]
 
 [tool.coverage.report]

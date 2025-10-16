@@ -26,7 +26,7 @@ def process_entity(entity: Dict[str, Any]) -> Dict[str, Any]:
 
 # ✅ ALWAYS DO THIS
 from pydantic import BaseModel
-from pindrop_challenge.domain.entities import Entity, EntityStatus, EntityPriority
+from challenge.domain.entities import Entity, EntityStatus, EntityPriority
 
 def process_entity(entity: Entity) -> Entity:
     if entity.status == EntityStatus.ACTIVE:
@@ -189,8 +189,8 @@ class EntityService:
 ```python
 # FastAPI endpoint with typed models
 from fastapi import APIRouter, HTTPException
-from pindrop_challenge.domain.services import EntityService
-from pindrop_challenge.domain.errors import GetEntityResult, NotFoundError
+from challenge.domain.services import EntityService
+from challenge.domain.errors import GetEntityResult, NotFoundError
 
 router = APIRouter()
 
@@ -215,7 +215,7 @@ async def get_entity(
 #### Domain Services
 ```python
 # domain/services/entity_service.py
-from pindrop_challenge.domain.errors import (
+from challenge.domain.errors import (
     GetEntityResult,
     GetEntitySuccess,
     NotFoundError,
@@ -279,8 +279,8 @@ class EntityRepository(ABC):
 ```python
 # infrastructure/repositories/postgres_entity_repository.py
 from sqlalchemy.ext.asyncio import AsyncSession
-from pindrop_challenge.domain.interfaces import EntityRepository
-from pindrop_challenge.domain.entities import Entity
+from challenge.domain.interfaces import EntityRepository
+from challenge.domain.entities import Entity
 
 class PostgresEntityRepository(EntityRepository):
     """PostgreSQL implementation of EntityRepository."""
@@ -314,7 +314,7 @@ class PostgresEntityRepository(EntityRepository):
 
 ```python
 import pytest
-from pindrop_challenge.domain.entities import Entity, EntityStatus
+from challenge.domain.entities import Entity, EntityStatus
 
 @pytest.fixture
 def test_entity() -> Entity:
@@ -341,7 +341,7 @@ assert "error" in result
 assert result["error"] == "not_found"
 
 # ✅ ALWAYS DO THIS
-from pindrop_challenge.domain.errors import NotFoundError
+from challenge.domain.errors import NotFoundError
 
 assert isinstance(result, NotFoundError)
 assert result.resource_type == "Entity"
@@ -445,7 +445,7 @@ api_key = settings.get("api_key", "")  # BaseSettings doesn't have .get()
 api_key = getattr(settings, "api_key", "")  # Runtime string lookups
 
 # ✅ ALWAYS USE - Type-safe direct access
-from pindrop_challenge.infrastructure.config import Settings
+from challenge.infrastructure.config import Settings
 
 class ExternalAPIClient:
     def __init__(self, settings: Settings):

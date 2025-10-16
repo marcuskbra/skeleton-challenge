@@ -24,7 +24,7 @@ from typing import Any
 from fastapi import APIRouter, status
 from pydantic import BaseModel, Field
 
-from pindrop_challenge import __version__
+from challenge import __version__
 
 logger = logging.getLogger(__name__)
 

@@ -26,7 +26,7 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
 
 - Install dependencies: `uv pip install -e .` (or use `make install`)
 - Install dev dependencies: `uv pip install -e ".[dev,test-integration]"` (or use `make dev-install`)
-- Run application: `python -m pindrop_challenge` (or use `make run`)
+- Run application: `python -m challenge` (or use `make run`)
 - Run unit tests only (default): `pytest tests/unit/` (or use `make test`)
 - Run all tests: `pytest tests/` (or use `make test-all`)
 - Run integration tests: `pytest tests/integration/` (or use `make test-integration`)
@@ -182,7 +182,7 @@ tests/
 Every domain operation returns a discriminated union of Success/Error types:
 
 ```python
-from pindrop_challenge.domain.errors import (
+from challenge.domain.errors import (
     GetEntityResult,
     GetEntitySuccess,
     NotFoundError
@@ -249,7 +249,7 @@ async def test_get_entity_not_found():
 ## Common Patterns
 
 ### Adding a New Domain Entity
-1. Create entity in `src/pindrop_challenge/domain/entities/`
+1. Create entity in `src/challenge/domain/entities/`
 2. Inherit from `DomainEntity` or `ImmutableEntity`
 3. Use Pydantic Field for validation
 4. Write unit tests with builders

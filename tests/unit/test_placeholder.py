@@ -6,7 +6,7 @@ This file can be deleted once real tests are added.
 
 import pytest
 
-import pindrop_challenge
+import challenge
 
 
 def test_placeholder():
@@ -16,7 +16,7 @@ def test_placeholder():
 
 def test_imports():
     """Verify package can be imported."""
-    assert pindrop_challenge.__version__ == "0.1.0"
+    assert challenge.__version__ == "0.1.0"
 
 
 @pytest.mark.parametrize(

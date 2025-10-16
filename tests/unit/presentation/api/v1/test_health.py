@@ -14,7 +14,7 @@ from datetime import datetime
 import pytest
 from fastapi import status
 
-from pindrop_challenge import __version__
+from challenge import __version__
 
 
 @pytest.mark.unit
