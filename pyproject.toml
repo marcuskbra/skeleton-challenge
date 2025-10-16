@@ -1,5 +1,5 @@
 [project]
-name = "pindrop-challenge"
+name = "skeleton-challenge"
 version = "0.1.0"
 description = "A modern Python project with Clean Architecture"
 readme = "README.md"

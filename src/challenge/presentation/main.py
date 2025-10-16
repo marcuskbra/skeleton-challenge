@@ -38,12 +38,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     - Resource cleanup on shutdown
     """
     # Startup
-    logger.info("Starting pindrop-challenge API v%s", __version__)
+    logger.info("Starting skeleton-challenge API v%s", __version__)
 
     yield
 
     # Shutdown
-    logger.info("Shutting down pindrop-challenge API")
+    logger.info("Shutting down skeleton-challenge API")
 
 
 def create_app(environment: str = "development") -> FastAPI:
@@ -64,7 +64,7 @@ def create_app(environment: str = "development") -> FastAPI:
 
     """
     app = FastAPI(
-        title="Pindrop Challenge API",
+        title="Skeleton Challenge API",
         description="A modern Python API with Clean Architecture",
         version=__version__,
         lifespan=lifespan,

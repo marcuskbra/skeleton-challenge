@@ -1,4 +1,4 @@
-# Pindrop Challenge
+# Skeleton Challenge
 
 A modern Python project with Clean Architecture, type-safe error handling, and following production-standards for development workflow.
 
@@ -60,7 +60,7 @@ This project follows a **Simplified 3-Layer Clean Architecture** with clear sepa
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd pindrop-challenge
+cd skeleton-challenge
 
 # Install dependencies with uv (recommended)
 make install        # Production dependencies only
@@ -188,7 +188,7 @@ make quick         # Fast tests + quality checks
 ## 📁 Project Structure
 
 ```
-pindrop-challenge/
+skeleton-challenge/
 ├── src/challenge/      # Source code (Clean Architecture)
 │   ├── domain/                 # Core business logic
 │   │   ├── base_models.py     # Base classes for entities & value objects

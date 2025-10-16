@@ -1,4 +1,4 @@
-# Makefile for pindrop-challenge
+# Makefile for skeleton-challenge
 # Modern Python project with Clean Architecture
 
 .PHONY: help install dev-install test lint lint-fix format format-fix type-check coverage validate clean run \
@@ -9,7 +9,7 @@
 # ============================================================================
 
 help: ## Show this help message
-	@echo "pindrop-challenge - Available commands:"
+	@echo "skeleton-challenge - Available commands:"
 	@echo ""
 	@echo "Setup & Installation:"
 	@grep -E '^(install|dev-install):.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
@@ -45,17 +45,17 @@ dev-install: ## Install all dependencies including dev and test extras
 # ============================================================================
 
 run: ## Run the application
-	uv run python -m pindrop_challenge
+	uv run python -m challenge
 
 # ============================================================================
 # API Development
 # ============================================================================
 
 api-dev: ## Run the API server in development mode (auto-reload)
-	uv run uvicorn pindrop_challenge.presentation.main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn challenge.presentation.main:app --reload --host 0.0.0.0 --port 8000
 
 api-prod: ## Run the API server in production mode
-	uv run uvicorn pindrop_challenge.presentation.main:app --host 0.0.0.0 --port 8000 --workers 4
+	uv run uvicorn challenge.presentation.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 api-test: ## Run API tests only
 	uv run pytest tests/unit/presentation/api/ -xvs
@@ -89,7 +89,7 @@ test-fast: ## Run tests quickly (less verbose)
 
 coverage: ## Run tests with coverage report
 	uv run pytest tests/ \
-		--cov=src/pindrop_challenge \
+		--cov=src/challenge \
 		--cov-report=term-missing \
 		--cov-report=html \
 		--cov-report=xml

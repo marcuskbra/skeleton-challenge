@@ -1,7 +1,7 @@
 """
-Pindrop Challenge - A modern Python project with Clean Architecture.
+Skeleton Challenge - A modern Python project with Clean Architecture.
 
-This is the main package for the Pindrop Challenge project, implementing a
+This is the main package for the Skeleton Challenge project, implementing a
 simplified 3-layer Clean Architecture with:
 
 - Presentation Layer: User interfaces (API, CLI, Web)
