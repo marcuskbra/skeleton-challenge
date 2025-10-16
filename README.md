@@ -10,7 +10,7 @@ This project follows a **Simplified 3-Layer Clean Architecture** with clear sepa
 ┌─────────────────────────────────────────────────────────────┐
 │                    PRESENTATION LAYER                       │
 │  ┌────────────────────────────────────────────────────┐     │
-│  │  API Endpoints - CLI Commands - Web Interfaces      │     │
+│  │  API Endpoints - CLI Commands - Web Interfaces     │     │
 │  └────────────────────────────────────────────────────┘     │
 └────────────────────────┬────────────────────────────────────┘
                          │ Uses
@@ -29,7 +29,7 @@ This project follows a **Simplified 3-Layer Clean Architecture** with clear sepa
 │  ┌────────────────────────────────────────────────────┐     │
 │  │  External APIs - Database - File System - Cache    │     │
 │  └────────────────────────────────────────────────────┘     │
-└──────────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Key Architectural Features

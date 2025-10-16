@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from pindrop_challenge import __version__
+from pindrop_challenge.presentation.api.v1 import health
 
 logger = logging.getLogger(__name__)
 
@@ -211,8 +212,6 @@ def _register_routes(app: FastAPI) -> None:
         app: FastAPI application instance
 
     """
-    from pindrop_challenge.presentation.api.v1 import health  # noqa: PLC0415
-
     # Include API v1 routers
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
 
