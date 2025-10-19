@@ -31,10 +31,10 @@ help: ## Show this help message
 # ============================================================================
 
 install: ## Install production dependencies
-	uv pip install -e .
+	uv sync --no-dev
 
 dev-install: ## Install all dependencies including dev and test extras
-	uv pip install -e ".[dev,test-integration]"
+	uv sync --all-extras
 	@echo "Installing tox globally for convenience..."
 	uv tool install tox --with tox-uv
 	@echo "Installing pre-commit hooks..."
@@ -173,13 +173,14 @@ tox-py312: ## Run tests on Python 3.12 specifically
 # ============================================================================
 
 deps-tree: ## Show dependency tree
-	uv pip tree
+	uv tree
 
 deps-outdated: ## Show outdated dependencies
-	uv pip list --outdated
+	uv tree --outdated
 
-deps-upgrade: ## Upgrade all dependencies
-	uv pip install --upgrade -e ".[dev,test-integration]"
+deps-upgrade: ## Upgrade all dependencies and update lock file
+	uv lock --upgrade
+	uv sync --all-extras
 
 version: ## Show project version
 	@python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"

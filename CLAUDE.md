@@ -24,9 +24,9 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
 
 ## Build & Test Commands
 
-- Install dependencies: `uv pip install -e .` (or use `make install`)
-- Install dev dependencies: `uv pip install -e ".[dev,test-integration]"` (or use `make dev-install`)
-- Run application: `python -m challenge` (or use `make run`)
+- Install dependencies: `uv sync --no-dev` (or use `make install`)
+- Install dev dependencies: `uv sync --all-extras` (or use `make dev-install`)
+- Run application: `uv run python -m challenge` (or use `make run`)
 - Run unit tests only (default): `pytest tests/unit/` (or use `make test`)
 - Run all tests: `pytest tests/` (or use `make test-all`)
 - Run integration tests: `pytest tests/integration/` (or use `make test-integration`)

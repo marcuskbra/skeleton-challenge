@@ -1,6 +1,40 @@
 """
 Test data builders following the Builder pattern for creating test objects.
-This provides a flexible and maintainable way to create test data.
+
+This module provides reusable builders for creating test data in a maintainable way.
+All builders support method chaining and sensible defaults.
+
+Available builders:
+- EntityBuilder - Domain entities with identity
+- ValueObjectBuilder - Value objects
+- RequestBuilder - API requests
+- ResponseBuilder - API responses
+- ConfigBuilder - Configuration objects
+- ErrorBuilder - Error objects
+
+Factory functions (use these):
+- entity() -> EntityBuilder
+- value_object() -> ValueObjectBuilder
+- request() -> RequestBuilder
+- response() -> ResponseBuilder
+- config() -> ConfigBuilder
+- error() -> ErrorBuilder
+
+Quick examples:
+    >>> # Create simple entity
+    >>> test_entity = entity().build()
+
+    >>> # Customize entity
+    >>> custom = entity().with_name("Test").with_metadata({"key": "value"}).build()
+
+    >>> # Create multiple entities
+    >>> entities = entity().build_many(10)
+
+    >>> # API request
+    >>> req = request().post("/api/v1/items").with_auth("token").build()
+
+    >>> # Success response
+    >>> resp = response().success(data={"id": "123"}).build()
 """
 
 from datetime import datetime, timezone
@@ -13,7 +47,22 @@ from uuid import uuid4
 
 
 class Builder:
-    """Base builder class for creating test objects."""
+    """
+    Base builder class for creating test objects.
+
+    Provides common functionality for all builders including method chaining
+    and batch creation with modifiers.
+
+    Methods:
+        with_field(name, value): Set any field value
+        build(): Build single object
+        build_many(count, modifier): Build multiple objects with optional modifications
+
+    Example:
+        >>> builder = Builder()
+        >>> obj = builder.with_field("name", "test").build()
+        >>> objs = builder.build_many(5, lambda data, i: {**data, "index": i})
+    """
 
     def __init__(self):
         self._data = {}
@@ -44,7 +93,35 @@ class Builder:
 
 
 class EntityBuilder(Builder):
-    """Builder for creating test domain entities."""
+    """
+    Builder for creating test domain entities with sensible defaults.
+
+    Default values:
+        - id: Random UUID
+        - name: "Test Entity"
+        - description: "Test entity description"
+        - created_at: Current UTC timestamp
+        - updated_at: Current UTC timestamp
+        - is_active: True
+        - metadata: {}
+
+    Methods:
+        with_id(entity_id): Set entity ID
+        with_name(name): Set entity name
+        with_description(description): Set description
+        with_metadata(metadata): Set metadata dict
+        inactive(): Mark entity as inactive
+        created_at(timestamp): Set creation timestamp
+
+    Example:
+        >>> from tests.builders import entity
+        >>> test_entity = (
+        ...     entity()
+        ...     .with_name("Important Item")
+        ...     .with_metadata({"priority": "high"})
+        ...     .build()
+        ... )
+    """
 
     def __init__(self):
         super().__init__()
@@ -128,7 +205,34 @@ class ValueObjectBuilder(Builder):
 
 
 class RequestBuilder(Builder):
-    """Builder for creating test API requests."""
+    """
+    Builder for creating test API requests.
+
+    Default values:
+        - method: "POST"
+        - endpoint: "/api/v1/test"
+        - headers: {"Content-Type": "application/json"}
+        - body: {}
+        - query_params: {}
+
+    Methods:
+        get(endpoint): Set as GET request
+        post(endpoint): Set as POST request
+        with_header(key, value): Add request header
+        with_body(body): Set request body
+        with_query(params): Set query parameters
+        with_auth(token): Add Bearer authorization header
+
+    Example:
+        >>> from tests.builders import request
+        >>> req = (
+        ...     request()
+        ...     .post("/api/v1/orders")
+        ...     .with_body({"customer_id": "123"})
+        ...     .with_auth("my-token")
+        ...     .build()
+        ... )
+    """
 
     def __init__(self):
         super().__init__()
@@ -174,7 +278,28 @@ class RequestBuilder(Builder):
 
 
 class ResponseBuilder(Builder):
-    """Builder for creating test API responses."""
+    """
+    Builder for creating test API responses.
+
+    Default values:
+        - status_code: 200
+        - headers: {"Content-Type": "application/json"}
+        - body: {}
+        - elapsed: 0.1
+
+    Methods:
+        with_status(status_code): Set HTTP status code
+        success(data): Set as successful response (200)
+        error(message, status_code): Set as error response
+        not_found(): Set as 404 Not Found
+        unauthorized(): Set as 401 Unauthorized
+
+    Example:
+        >>> from tests.builders import response
+        >>> success_resp = response().success(data={"id": "123"}).build()
+        >>> error_resp = response().error("Invalid input", 400).build()
+        >>> not_found = response().not_found().build()
+    """
 
     def __init__(self):
         super().__init__()
@@ -217,7 +342,30 @@ class ResponseBuilder(Builder):
 
 
 class ConfigBuilder(Builder):
-    """Builder for creating test configurations."""
+    """
+    Builder for creating test configurations.
+
+    Default values:
+        - environment: "test"
+        - debug: True
+        - log_level: "DEBUG"
+        - database_url: "sqlite:///:memory:"
+        - cache_enabled: False
+        - features: {}
+
+    Methods:
+        production(): Set production configuration
+        development(): Set development configuration
+        with_database(url): Set database URL
+        with_cache(enabled): Enable/disable cache
+        with_feature(name, enabled): Set feature flag
+
+    Example:
+        >>> from tests.builders import config
+        >>> test_cfg = config().build()
+        >>> prod_cfg = config().production().build()
+        >>> dev_cfg = config().development().with_feature("beta_ui", True).build()
+    """
 
     def __init__(self):
         super().__init__()
@@ -266,7 +414,27 @@ class ConfigBuilder(Builder):
 
 
 class ErrorBuilder(Builder):
-    """Builder for creating test error objects."""
+    """
+    Builder for creating test error objects.
+
+    Default values:
+        - type: "GenericError"
+        - message: "An error occurred"
+        - code: "ERR_GENERIC"
+        - details: {}
+        - timestamp: Current UTC timestamp
+
+    Methods:
+        validation_error(field, message): Create validation error
+        not_found(resource): Create not found error
+        permission_denied(action): Create permission denied error
+
+    Example:
+        >>> from tests.builders import error
+        >>> validation_err = error().validation_error("email", "Invalid format").build()
+        >>> not_found_err = error().not_found("Order").build()
+        >>> permission_err = error().permission_denied("delete_order").build()
+    """
 
     def __init__(self):
         super().__init__()
@@ -309,30 +477,78 @@ class ErrorBuilder(Builder):
 
 
 def entity() -> EntityBuilder:
-    """Create a new entity builder."""
+    """
+    Create a new entity builder.
+
+    Returns:
+        EntityBuilder for creating test domain entities
+
+    Example:
+        >>> test_entity = entity().with_name("Test").build()
+    """
     return EntityBuilder()
 
 
 def value_object() -> ValueObjectBuilder:
-    """Create a new value object builder."""
+    """
+    Create a new value object builder.
+
+    Returns:
+        ValueObjectBuilder for creating test value objects
+
+    Example:
+        >>> temp = value_object().with_value(25.5).with_unit("celsius").build()
+    """
     return ValueObjectBuilder()
 
 
 def request() -> RequestBuilder:
-    """Create a new request builder."""
+    """
+    Create a new request builder.
+
+    Returns:
+        RequestBuilder for creating test API requests
+
+    Example:
+        >>> req = request().post("/api/v1/items").with_auth("token").build()
+    """
     return RequestBuilder()
 
 
 def response() -> ResponseBuilder:
-    """Create a new response builder."""
+    """
+    Create a new response builder.
+
+    Returns:
+        ResponseBuilder for creating test API responses
+
+    Example:
+        >>> resp = response().success(data={"id": "123"}).build()
+    """
     return ResponseBuilder()
 
 
 def config() -> ConfigBuilder:
-    """Create a new config builder."""
+    """
+    Create a new config builder.
+
+    Returns:
+        ConfigBuilder for creating test configurations
+
+    Example:
+        >>> cfg = config().production().with_feature("beta", True).build()
+    """
     return ConfigBuilder()
 
 
 def error() -> ErrorBuilder:
-    """Create a new error builder."""
+    """
+    Create a new error builder.
+
+    Returns:
+        ErrorBuilder for creating test error objects
+
+    Example:
+        >>> err = error().validation_error("email", "Invalid format").build()
+    """
     return ErrorBuilder()
