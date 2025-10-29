@@ -90,7 +90,7 @@ async def async_client():
 @pytest.fixture
 def test_client():
     """Create a FastAPI test client for API endpoint testing."""
-    from challenge.presentation.main import create_app  # noqa: PLC0415
+    from challenge.api.main import create_app  # noqa: PLC0415
 
     app = create_app(environment="test")
     with TestClient(app) as client:

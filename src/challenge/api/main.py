@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from challenge import __version__
-from challenge.presentation.api.v1 import health
+from challenge.api.routes import health
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ def create_app(environment: str = "development") -> FastAPI:
     """
     app = FastAPI(
         title="Skeleton Challenge API",
-        description="A modern Python API with Clean Architecture",
+        description="A modern Python API with simplified 3-layer architecture",
         version=__version__,
         lifespan=lifespan,
         docs_url="/api/docs" if environment != "production" else None,
@@ -154,8 +154,8 @@ def _register_error_handlers(app: FastAPI) -> None:
     Register custom error handlers for API exceptions.
 
     Handles FastAPI and Pydantic validation errors with consistent responses.
-    Domain errors (discriminated unions) are handled at the endpoint level
-    by checking result types and returning appropriate responses.
+    Custom exceptions should be handled at the endpoint level by raising
+    appropriate HTTPException instances.
 
     Args:
         app: FastAPI application instance
@@ -212,7 +212,7 @@ def _register_routes(app: FastAPI) -> None:
         app: FastAPI application instance
 
     """
-    # Include API v1 routers
+    # Include API routers
     app.include_router(health.router, prefix="/api/v1", tags=["health"])
 
 

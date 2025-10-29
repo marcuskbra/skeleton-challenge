@@ -12,7 +12,7 @@ import sys
 import uvicorn
 
 from challenge import __version__
-from challenge.presentation.main import app
+from challenge.api.main import app
 
 
 def setup_logging(level: str = "INFO") -> None:
