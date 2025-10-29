@@ -8,19 +8,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture Overview
 
-This project uses a **simplified 3-layer Clean Architecture**:
-- **Presentation Layer**: API endpoints, CLI commands, external interfaces
-- **Domain Layer**: Entities, value objects, services, discriminated union error models
-- **Infrastructure Layer**: External integrations, database access, file system operations
+This project uses a **simplified 3-layer architecture** following YAGNI principles:
 
-The architecture follows YAGNI principles to reduce boilerplate while maintaining clean boundaries and strong typing through discriminated unions.
+### Layer Structure
+- **API Layer** (`api/`): HTTP interface and request/response handling
+- **Service Layer** (`services/`): Business logic and orchestration (add when needed)
+- **Data Layer** (`models/`): Data models and repository abstractions (add when needed)
+- **Core** (`core/`): Shared utilities, config, and exceptions
 
-### Clean Architecture Benefits
-- **Clear separation of concerns**: Each layer has specific responsibilities
-- **Dependency inversion**: Domain layer has no dependencies on external layers
-- **Testability**: Easy to test business logic in isolation
-- **Maintainability**: Changes in one layer don't affect others
-- **Type safety**: Strong typing with Pydantic models and discriminated unions
+### Design Principles
+- **YAGNI (You Aren't Gonna Need It)**: Start simple, add complexity only when needed
+- **Clear separation of concerns**: Each layer has specific, well-defined responsibilities
+- **Pythonic patterns**: Standard exceptions, simple fixtures, FastAPI dependency injection
+- **Gradual adoption**: Begin with API layer, add Services/Models as requirements grow
+- **Testability**: Easy to test each layer in isolation with simple fixtures
+
+### When to Add Each Layer
+
+**Start with API Layer Only** (Current state):
+- Simple CRUD operations
+- Stateless transformations
+- Direct database queries via ORM
+
+**Add Service Layer When**:
+- Business logic spans multiple resources
+- Complex orchestration needed
+- Shared logic across endpoints
+- Transaction management required
+
+**Add Repository/Models Layer When**:
+- Multiple data sources (database + cache + external API)
+- Complex query logic needs abstraction
+- Need to swap implementations (testing, migration)
+
+### Architecture Benefits
+- **Simplicity**: No over-engineering, appropriate for project size
+- **Maintainability**: Clear boundaries between concerns
+- **Extensibility**: Can add layers incrementally as complexity grows
+- **Type safety**: Strong typing with Pydantic models throughout
+- **Fast feedback**: Simple structure means faster development cycles
+
+### Layer Details
+
+For a complete example with CRUD operations, dependency injection, and testing patterns,
+see `claudedocs/simplified_architecture_example.md`
 
 ## Build & Test Commands
 
@@ -66,7 +97,7 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
 
 - **File handling**: Prefer `pathlib.Path` over `os.path`
 - **Debugging**: Use `logging` module instead of `print`
-- **Error handling**: Use discriminated unions (Success/Error types) for type-safe error handling
+- **Error handling**: Use standard Python exceptions with FastAPI HTTPException for HTTP errors
 - **Function arguments**: Avoid mutable default arguments (use `None` and check)
 - **Data containers**: Leverage `Pydantic` models for data validation and serialization
 - **Configuration**: Use environment variables for configuration (python-dotenv)
@@ -84,8 +115,8 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
   - Liskov Substitution
   - Interface Segregation
   - Dependency Inversion
-- **Clean architecture**: Separate code into presentation, domain, infrastructure layers
-- **Domain-centric design**: Domain layer contains entities, value objects, services, and business logic
+- **Layered architecture**: Separate code into api, services (when needed), models (when needed), core
+- **Business logic organization**: Keep business logic in service layer when it grows beyond simple CRUD
 - **DRY principle**: Avoid code duplication; reuse existing functionality
 - **Configuration management**: Use environment variables for different environments
 - **Focused changes**: Only implement explicitly requested changes
@@ -94,7 +125,7 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
 - **Test coverage**: Write comprehensive unit and integration tests (≥80% coverage)
 - **Modular design**: Create reusable, modular components
 - **Logging**: Implement appropriate logging levels (debug, info, warning, error)
-- **Error handling**: Use discriminated unions for compile-time verified error handling
+- **Error handling**: Use standard Python exceptions with proper HTTP status codes
 - **Security best practices**: Input validation, output encoding, secure defaults
 - **Performance**: Profile before optimizing, optimize critical paths only
 - **Dependency management**: Add libraries only when essential
@@ -104,45 +135,54 @@ The architecture follows YAGNI principles to reduce boilerplate while maintainin
 ### Testing Strategy
 
 - **Test Types**:
-  - Unit tests for domain logic (fast, isolated)
-  - Integration tests for external integrations
-  - Contract tests for interface requirements
-- **Builder Pattern**: Use test builders for maintainable test data (see `tests/builders.py`)
+  - Unit tests for API routes and business logic (fast, isolated)
+  - Integration tests for external integrations (when added)
+  - Performance tests for critical operations
+- **Simple Fixtures**: Use pytest fixtures in `conftest.py` for test data
 - **Parameterized Tests**: Use `@pytest.mark.parametrize` for test variations
-- **Performance Testing**: Validate response times for critical operations
-- **Error Scenarios**: Test both Success and Error paths in discriminated unions
+- **Layer Testing**: Test each layer independently with appropriate mocks
+- **Error Scenarios**: Test both success and error paths with proper exception handling
 
 ### Test Organization
 
 ```
 tests/
 ├── unit/               # Fast, isolated unit tests
-│   ├── domain/        # Domain layer tests
-│   ├── infrastructure/# Infrastructure tests (mocked)
-│   └── presentation/  # Presentation tests
+│   ├── api/           # API layer tests
+│   │   └── routes/    # Route handler tests
+│   ├── services/      # Service layer tests (when added)
+│   └── models/        # Model tests (when added)
 ├── integration/       # Tests with real external dependencies
-├── builders.py        # Test data builders (Builder pattern)
-└── conftest.py        # Shared fixtures
+└── conftest.py        # Shared fixtures and test configuration
 ```
 
 ### Testing Patterns
 
-1. **Builder Pattern for Test Data**:
+1. **Simple Fixtures for Test Data**:
    ```python
-   from tests.builders import entity, request
+   # In conftest.py
+   @pytest.fixture
+   def sample_user_data():
+       return {
+           "id": "user-123",
+           "name": "Test User",
+           "email": "test@example.com"
+       }
 
-   test_entity = entity().with_name("Test").with_metadata({"key": "value"}).build()
-   entities = entity().build_many(10)
+   # In test file
+   def test_create_user(test_client, sample_user_data):
+       response = test_client.post("/api/v1/users", json=sample_user_data)
+       assert response.status_code == 201
    ```
 
 2. **Parameterized Testing**:
    ```python
    @pytest.mark.parametrize("input_value,expected", [
-       ("valid", True),
-       ("invalid", False),
+       ("valid@email.com", True),
+       ("invalid-email", False),
    ])
-   def test_validation(input_value, expected):
-       assert validate(input_value) == expected
+   def test_email_validation(input_value, expected):
+       assert is_valid_email(input_value) == expected
    ```
 
 3. **Testing Async Code**:
@@ -150,14 +190,22 @@ tests/
    @pytest.mark.asyncio
    async def test_async_operation():
        result = await async_function()
-       assert result.success
+       assert result is not None
+   ```
+
+4. **Testing Error Cases**:
+   ```python
+   def test_not_found_error(test_client):
+       response = test_client.get("/api/v1/users/nonexistent")
+       assert response.status_code == 404
+       assert "not found" in response.json()["detail"].lower()
    ```
 
 ### Test Coverage Requirements
 
-- **Unit Tests**: ≥ 80% coverage for domain logic
-- **Integration Tests**: Cover all external integration points
-- **Error Paths**: Test all error scenarios using discriminated unions
+- **Unit Tests**: ≥ 80% coverage for all business logic
+- **Integration Tests**: Cover all external integration points (when added)
+- **Error Paths**: Test all error scenarios with proper status codes
 - **Edge Cases**: Include boundary conditions and edge cases
 
 ## Development Workflow
@@ -176,95 +224,193 @@ tests/
 
 ## Error Handling Pattern
 
-**IMPORTANT**: This project uses discriminated unions for error handling, not exceptions.
+**IMPORTANT**: This project uses standard Python exceptions with FastAPI's HTTPException for HTTP errors.
 
 ### Pattern Overview
-Every domain operation returns a discriminated union of Success/Error types:
+Use standard Python exceptions for business logic errors, and FastAPI's HTTPException for HTTP responses:
 
 ```python
-from challenge.domain.errors import (
-    GetEntityResult,
-    GetEntitySuccess,
-    NotFoundError
-)
+from fastapi import HTTPException, status
+from pydantic import ValidationError
 
-# Domain service method
-async def get_entity(self, entity_id: str) -> GetEntityResult:
-    # Validate input
-    if not entity_id:
-        return ValidationError(
-            message="Entity ID is required",
-            field_errors={"entity_id": "Cannot be empty"}
+# Service method with standard exceptions
+async def get_user(user_id: str) -> dict:
+    # Input validation
+    if not user_id:
+        raise ValueError("User ID is required")
+
+    # Business logic
+    user = await database.get_user(user_id)
+    if not user:
+        raise ValueError(f"User not found: {user_id}")
+
+    return user
+
+# API endpoint handles exceptions
+@router.get("/users/{user_id}")
+async def get_user_endpoint(user_id: str):
+    try:
+        user = await get_user(user_id)
+        return user
+    except ValueError as e:
+        # Convert to appropriate HTTP error
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
         )
-
-    # Try to get entity
-    entity = await self.repository.get(entity_id)
-    if not entity:
-        return NotFoundError(
-            message="Entity not found",
-            resource_type="Entity",
-            resource_id=entity_id
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
         )
-
-    return GetEntitySuccess(entity=entity.model_dump())
-
-# Consumer handles both cases
-result = await service.get_entity(entity_id)
-
-if isinstance(result, NotFoundError):
-    logger.error(f"Not found: {result.message}")
-    raise HTTPException(status_code=404, detail=result.message)
-
-if isinstance(result, ValidationError):
-    logger.error(f"Validation failed: {result.field_errors}")
-    raise HTTPException(status_code=400, detail=result.field_errors)
-
-# Type checker knows result is GetEntitySuccess here
-return result.entity
 ```
 
-### Benefits of Discriminated Unions
-- **Type Safety**: Compiler/type-checker verifies all cases are handled
-- **Explicit Error Handling**: Can't forget to handle errors
-- **Better Documentation**: Return types clearly show possible outcomes
-- **No Hidden Exceptions**: All failure modes are explicit
-
-### Testing with Discriminated Unions
-Always test both success and error paths:
+### Custom Exceptions (When Needed)
+Create custom exceptions for specific business errors:
 
 ```python
+# In core/exceptions.py
+class UserNotFoundError(Exception):
+    """Raised when user doesn't exist."""
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        super().__init__(f"User not found: {user_id}")
+
+class InsufficientBalanceError(Exception):
+    """Raised when account balance is insufficient."""
+    def __init__(self, required: float, available: float):
+        self.required = required
+        self.available = available
+        super().__init__(f"Insufficient balance: need {required}, have {available}")
+
+# Usage in service
+async def transfer_money(from_id: str, to_id: str, amount: float):
+    from_account = await get_account(from_id)
+    if from_account.balance < amount:
+        raise InsufficientBalanceError(amount, from_account.balance)
+    # ... rest of transfer logic
+
+# API endpoint maps to HTTP status
+@router.post("/transfer")
+async def transfer_endpoint(request: TransferRequest):
+    try:
+        result = await transfer_money(request.from_id, request.to_id, request.amount)
+        return result
+    except InsufficientBalanceError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except UserNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+```
+
+### Benefits of Standard Exceptions
+- **Pythonic**: Follows standard Python patterns and idioms
+- **Simple**: No additional complexity or type machinery
+- **FastAPI Integration**: Natural integration with FastAPI exception handling
+- **Familiar**: Standard pattern understood by all Python developers
+
+### Testing with Standard Exceptions
+Test both success and error paths:
+
+```python
+import pytest
+
 # Test success case
-async def test_get_entity_success():
-    result = await service.get_entity("valid-id")
-    assert isinstance(result, GetEntitySuccess)
-    assert result.entity["id"] == "valid-id"
+async def test_get_user_success():
+    user = await get_user("valid-id")
+    assert user["id"] == "valid-id"
 
 # Test error case
-async def test_get_entity_not_found():
-    result = await service.get_entity("invalid-id")
-    assert isinstance(result, NotFoundError)
-    assert result.resource_id == "invalid-id"
+async def test_get_user_not_found():
+    with pytest.raises(ValueError, match="User not found"):
+        await get_user("invalid-id")
+
+# Test HTTP endpoint error handling
+def test_get_user_endpoint_not_found(test_client):
+    response = test_client.get("/api/v1/users/nonexistent")
+    assert response.status_code == 404
+    assert "not found" in response.json()["detail"].lower()
 ```
 
 ## Common Patterns
 
-### Adding a New Domain Entity
-1. Create entity in `src/challenge/domain/entities/`
-2. Inherit from `DomainEntity` or `ImmutableEntity`
-3. Use Pydantic Field for validation
-4. Write unit tests with builders
+### Adding a New API Endpoint
+1. Create route handler in `src/challenge/api/routes/`
+2. Define request/response schemas in `api/schemas/` (if needed)
+3. Implement business logic inline or call service layer
+4. Handle exceptions and convert to HTTP responses
+5. Write tests in `tests/unit/api/routes/`
 
-### Adding a Domain Service Method
-1. Define method in service class
-2. Return discriminated union (Success | Error types)
-3. Handle all error cases explicitly
-4. Write tests for both success and error paths
+Example:
+```python
+# api/routes/users.py
+from fastapi import APIRouter, HTTPException, status
 
-### Adding an API Endpoint
-1. Create endpoint in presentation layer
-2. Call domain service
-3. Handle discriminated union result
-4. Convert to appropriate HTTP response
+router = APIRouter()
+
+@router.get("/users/{user_id}")
+async def get_user(user_id: str):
+    try:
+        user = await get_user_from_db(user_id)
+        return user
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+```
+
+### Adding Business Logic (Service Layer)
+When logic grows beyond simple CRUD:
+
+1. Create service class in `src/challenge/services/`
+2. Use dependency injection via `api/dependencies.py`
+3. Raise standard exceptions for errors
+4. Write tests in `tests/unit/services/`
+
+Example:
+```python
+# services/user_service.py
+class UserService:
+    def __init__(self, db: Database):
+        self.db = db
+
+    async def create_user(self, data: dict) -> dict:
+        if await self.db.user_exists(data["email"]):
+            raise ValueError("User already exists")
+        return await self.db.create_user(data)
+
+# api/dependencies.py
+def get_user_service() -> UserService:
+    return UserService(database=get_database())
+
+# api/routes/users.py
+@router.post("/users")
+async def create_user(
+    data: UserCreate,
+    service: UserService = Depends(get_user_service)
+):
+    try:
+        user = await service.create_user(data.model_dump())
+        return user
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+```
+
+### Adding Data Models
+When you need structured data types:
+
+1. Create Pydantic models in `src/challenge/models/`
+2. Use for request/response schemas
+3. Include validation rules
+4. Write validation tests
+
+Example:
+```python
+# models/user.py
+from pydantic import BaseModel, EmailStr, Field
+
+class User(BaseModel):
+    id: str = Field(..., description="User ID")
+    email: EmailStr = Field(..., description="Email address")
+    name: str = Field(..., min_length=1, max_length=100)
 
 ## Important Reminders
 
