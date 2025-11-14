@@ -15,9 +15,9 @@ Characteristics of unit tests:
 - No shared state between tests
 
 Test organization mirrors source structure:
-- domain/: Tests for domain entities, value objects, services
-- infrastructure/: Tests for infrastructure components (with mocked I/O)
-- presentation/: Tests for presentation layer (with mocked services)
+- api/: Tests for API routes, schemas, and dependencies
+- services/: Tests for business logic and service layer (add when needed)
+- models/: Tests for data models and repositories (add when needed)
 
 Best practices:
 - One assertion per test (when practical)

@@ -8,33 +8,33 @@ This project follows a **Simplified 3-Layer Clean Architecture** with clear sepa
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                       │
+│                        API LAYER                            │
 │  ┌────────────────────────────────────────────────────┐     │
-│  │  API Endpoints - CLI Commands - Web Interfaces     │     │
+│  │  HTTP Endpoints - Request/Response Handling        │     │
 │  └────────────────────────────────────────────────────┘     │
 └────────────────────────┬────────────────────────────────────┘
                          │ Uses
 ┌────────────────────────▼────────────────────────────────────┐
-│                      DOMAIN LAYER                           │
+│                     SERVICE LAYER                           │
 │  ┌────────────────────────────────────────────────────┐     │
-│  │  • Domain Services (Business Logic)                │     │
-│  │  • Entities & Value Objects                        │     │
-│  │  • Discriminated Unions for Error Handling         │     │
+│  │  • Business Logic & Orchestration                  │     │
+│  │  • Domain Services                                 │     │
+│  │  • Error Handling with Standard Exceptions         │     │
 │  │  • Business Rules & Validations                    │     │
 │  └────────────────────────────────────────────────────┘     │
 └────────────────────────┬────────────────────────────────────┘
                          │ Uses
 ┌────────────────────────▼────────────────────────────────────┐
-│                  INFRASTRUCTURE LAYER                       │
+│                      DATA LAYER                             │
 │  ┌────────────────────────────────────────────────────┐     │
-│  │  External APIs - Database - File System - Cache    │     │
+│  │  Data Models - Repository Abstractions             │     │
 │  └────────────────────────────────────────────────────┘     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Key Architectural Features
 
-- **Simplified 3-Layer Architecture**: Clean separation between Presentation, Domain, and Infrastructure
+- **Simplified 3-Layer Architecture**: Clean separation between API, Services, and Models
 - **Type Safety**: Full Pydantic validation and discriminated unions for error handling
 - **Performance**: Async-first design for high concurrency
 - **No Hidden Exceptions**: All errors handled through type-safe discriminated unions
@@ -189,31 +189,29 @@ make quick         # Fast tests + quality checks
 
 ```
 skeleton-challenge/
-├── src/challenge/      # Source code (Clean Architecture)
-│   ├── domain/                 # Core business logic
-│   │   ├── base_models.py     # Base classes for entities & value objects
-│   │   ├── errors.py          # Discriminated unions for error handling
-│   │   ├── entities/          # Domain entities
-│   │   ├── value_objects/     # Immutable value objects
-│   │   ├── services/          # Domain services
-│   │   └── interfaces/        # Port definitions (abstractions)
-│   ├── infrastructure/         # External world integration
-│   │   ├── clients/           # External API clients
-│   │   └── utils/             # Infrastructure utilities
-│   └── presentation/          # User interface layer
-│       └── [api|cli|web]/     # Specific interface implementation
-├── tests/                      # Test suite
-│   ├── unit/                  # Fast unit tests
-│   ├── integration/           # Integration tests
-│   ├── conftest.py           # Shared fixtures
-│   └── builders.py           # Test data builders
-├── Makefile                    # Development automation
-├── pyproject.toml             # Project configuration
-├── pytest.ini                 # Test configuration
-├── .env.example               # Environment variables template
-├── .env.test                  # Test environment settings
-├── .gitignore                 # Git ignore rules
-└── .pre-commit-config.yaml   # Pre-commit hooks
+├── src/challenge/             # Source code (3-layer architecture)
+│   ├── api/                   # API Layer - HTTP interface
+│   │   ├── main.py           # FastAPI app configuration
+│   │   ├── routes/           # API route handlers
+│   │   ├── schemas/          # Request/Response schemas
+│   │   └── dependencies.py   # Dependency injection
+│   ├── services/             # Service Layer - Business logic (add when needed)
+│   ├── models/               # Data Layer - Models & repositories (add when needed)
+│   └── core/                 # Shared utilities
+│       ├── config.py         # Configuration management
+│       └── exceptions.py     # Custom exceptions
+├── tests/                     # Test suite
+│   ├── unit/                 # Fast unit tests
+│   │   └── api/             # API layer tests
+│   ├── integration/          # Integration tests
+│   └── conftest.py          # Shared fixtures
+├── Makefile                   # Development automation
+├── pyproject.toml            # Project configuration
+├── pytest.ini                # Test configuration
+├── .env.example              # Environment variables template
+├── .env.test                 # Test environment settings
+├── .gitignore                # Git ignore rules
+└── .pre-commit-config.yaml  # Pre-commit hooks
 
 ```
 

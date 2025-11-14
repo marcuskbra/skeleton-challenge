@@ -52,13 +52,13 @@ run: ## Run the application
 # ============================================================================
 
 api-dev: ## Run the API server in development mode (auto-reload)
-	uv run uvicorn challenge.presentation.main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn challenge.api.main:app --reload --host 0.0.0.0 --port 8000
 
 api-prod: ## Run the API server in production mode
-	uv run uvicorn challenge.presentation.main:app --host 0.0.0.0 --port 8000 --workers 4
+	uv run uvicorn challenge.api.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 api-test: ## Run API tests only
-	uv run pytest tests/unit/presentation/api/ -xvs
+	uv run pytest tests/unit/api/routes/ -xvs
 
 api-health: ## Check API health endpoint
 	@echo "Checking API health..."

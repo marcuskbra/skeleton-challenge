@@ -184,13 +184,13 @@ class EntityService:
 
 ## 📋 Type Patterns by Layer (3-Layer Architecture)
 
-### Presentation Layer (API/CLI)
+### API Layer (HTTP Endpoints)
 
 ```python
-# FastAPI endpoint with typed models
-from fastapi import APIRouter, HTTPException
-from challenge.domain.services import EntityService
-from challenge.domain.errors import GetEntityResult, NotFoundError
+# FastAPI endpoint with typed models and standard exceptions
+from fastapi import APIRouter, HTTPException, status
+from challenge.api.schemas import EntityResponse
+from challenge.services import EntityService
 
 router = APIRouter()
 
@@ -199,14 +199,18 @@ async def get_entity(
     entity_id: str,
     service: EntityService = Depends(get_entity_service)
 ) -> EntityResponse:  # Typed response model
-    # Call domain service
-    result = await service.get_entity(entity_id)
+    try:
+        # Call service layer
+        entity = await service.get_entity(entity_id)
+        return EntityResponse.from_entity(entity)
+    except ValueError as e:
+        # Convert to HTTP error
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
 
-    # Handle discriminated union result
-    if isinstance(result, NotFoundError):
-        raise HTTPException(status_code=404, detail=result.message)
-
-    # Type checker knows result is GetEntitySuccess here
+    # Type checker knows entity is valid here
     return EntityResponse.from_domain(result.entity)
 ```
 

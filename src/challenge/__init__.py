@@ -1,21 +1,23 @@
 """
-Skeleton Challenge - A modern Python project with Clean Architecture.
+Skeleton Challenge - A modern Python project with simplified 3-layer architecture.
 
 This is the main package for the Skeleton Challenge project, implementing a
-simplified 3-layer Clean Architecture with:
+simplified 3-layer architecture with:
 
-- Presentation Layer: User interfaces (API, CLI, Web)
-- Domain Layer: Core business logic and rules
-- Infrastructure Layer: External dependencies and integrations
+- API Layer: HTTP endpoints and request/response handling
+- Service Layer: Business logic and orchestration (add when needed)
+- Data Layer: Models and repository abstractions (add when needed)
+- Core: Shared utilities, config, and exceptions
 
-The project emphasizes type safety, using discriminated unions for error
-handling and Pydantic models for data validation throughout.
+The project follows YAGNI principles - start simple and add complexity only
+when needed. Use standard Python exceptions with FastAPI's HTTPException for
+error handling.
 
 Key Features:
-- Type-safe error handling with discriminated unions
-- Clean Architecture with dependency inversion
+- Simplified architecture following YAGNI principles
+- Type safety with Pydantic models throughout
 - Async-first design for high concurrency
-- Comprehensive testing with builders pattern
+- Comprehensive testing with simple fixtures
 - Modern Python tooling (uv, ruff, ty)
 """
 
